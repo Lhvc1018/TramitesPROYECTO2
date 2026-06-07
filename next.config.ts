@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
   
   // LA OPCIÓN NUCLEAR: Apagar el bloqueo de prerenderizado estático
   experimental: {
+    // @ts-ignore
     missingSuspenseWithCsrBailout: false,
   },
 
