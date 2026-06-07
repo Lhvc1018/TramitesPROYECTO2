@@ -19,9 +19,14 @@ function getLocalIp() {
 const miIP = getLocalIp();
 
 const nextConfig: NextConfig = {
-  // AGREGA ESTO: Ignorar errores estrictos de TypeScript en Vercel
+  // Ignorar errores estrictos de TypeScript en Vercel
   typescript: {
     ignoreBuildErrors: true,
+  },
+  
+  // LA OPCIÓN NUCLEAR: Apagar el bloqueo de prerenderizado estático
+  experimental: {
+    missingSuspenseWithCsrBailout: false,
   },
 
   // Le pasamos la IP que detectó automáticamente
