@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '../components/Header';
@@ -27,7 +27,8 @@ const estadoConfig: Record<string, { label: string; color: string; icono: string
   '8': { label: 'Rechazado', color: 'bg-red-100 text-red-800 border-red-300', icono: '❌' },
 };
 
-export default function ConsultaTramitePage() {
+// 1. Convertimos tu componente principal en un sub-componente
+function ConsultaTramiteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tramite, setTramite] = useState<EstadoTramite | null>(null);
@@ -150,7 +151,6 @@ export default function ConsultaTramitePage() {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       
-      // Crear un iframe temporal para imprimir
       const iframe = document.createElement('iframe');
       iframe.style.display = 'none';
       iframe.src = url;
@@ -171,7 +171,7 @@ export default function ConsultaTramitePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <>
       {/* Header */}
       <Header />
 
@@ -214,17 +214,14 @@ export default function ConsultaTramitePage() {
           </div>
         ) : tramite ? (
           <div className="space-y-8">
-            {/* Card Principal */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-[#8B1A1A] to-[#6B1415]"></div>
               
               <div className="p-8">
-                {/* Título */}
                 <div className="mb-8">
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">{tramite.nombre_tramite}</h1>
                 </div>
 
-                {/* Estado */}
                 <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border-l-4 border-[#8B1A1A]">
                   <h2 className="text-sm font-semibold text-black uppercase tracking-wider mb-3">Estado Actual</h2>
                   <div className="flex items-center gap-4">
@@ -240,7 +237,6 @@ export default function ConsultaTramitePage() {
                   </div>
                 </div>
 
-                {/* Información General */}
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                     <h3 className="text-sm font-semibold text-purple-900 uppercase tracking-wider mb-2">Costo</h3>
@@ -257,11 +253,8 @@ export default function ConsultaTramitePage() {
                       })}
                     </p>
                   </div>
-
-                  
                 </div>
 
-                {/* Línea de tiempo de estados */}
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   <h3 className="text-lg font-bold text-gray-900 mb-6">Progreso del Trámite</h3>
                   <div className="space-y-4">
@@ -293,7 +286,6 @@ export default function ConsultaTramitePage() {
               </div>
             </div>
 
-            {/* Acciones - Factura */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Descargas de Factura</h3>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -321,7 +313,6 @@ export default function ConsultaTramitePage() {
               </div>
             </div>
 
-            {/* Acciones - Trámites */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Navegación</h3>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -340,7 +331,6 @@ export default function ConsultaTramitePage() {
               </div>
             </div>
 
-            {/* Información Adicional */}
             <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
               <h3 className="font-bold text-blue-900 mb-2">💡 Información</h3>
               <p className="text-blue-800 text-sm">
@@ -356,6 +346,25 @@ export default function ConsultaTramitePage() {
       <footer className="bg-gray-900 text-gray-400 text-center py-6 border-t border-gray-800">
         <p className="text-sm">© 2025 Universidad del Valle - Departamento de Admisiones. Todos los derechos reservados.</p>
       </footer>
+    </>
+  );
+}
+
+// 2. Exportamos el componente principal envuelto en Suspense
+export default function ConsultaTramitePage() {
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Suspense fallback={
+        <div className="flex-1 flex items-center justify-center">
+           <div className="animate-spin">
+              <svg className="w-16 h-16 text-[#8B1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+        </div>
+      }>
+        <ConsultaTramiteContent />
+      </Suspense>
     </div>
   );
 }
